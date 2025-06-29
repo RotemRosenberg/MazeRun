@@ -1,79 +1,162 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const ROWS = 12;
-const COLS = 12;
-const CELL_SIZE = canvas.width / COLS;
+const SIZE = Math.floor(Math.random() * 4) + 12; // 12–15
+const CELL_SIZE = canvas.width / SIZE;
 
-const grid = [];
+let grid = [];
+let player = { x: 0, y: 0 };
+let enemy = { x: SIZE - 1, y: SIZE - 1 };
+let exit = { x: Math.floor(SIZE / 2), y: SIZE - 1 };
 
-// יצירת הגריד
-for (let y = 0; y < ROWS; y++) {
-    const row = [];
-    for (let x = 0; x < COLS; x++) {
-        row.push({
-            x,
-            y,
-            isWall: false,
-            isExit: false,
-            playerHere: false,
-            enemyHere: false
-        });
-    }
-    grid.push(row);
+const WALLS_COUNT = Math.floor(SIZE * SIZE * 0.2);
+const RANDOMIZER_COUNT = 2;
+const EXTRA_TURN_COUNT = 2;
+
+function createCell(x, y) {
+    return {
+        x,
+        y,
+        isWall: false,
+        isExit: false,
+        isRandomizer: false,
+        isExtraTurn: false
+    };
 }
 
-// הגדרת שחקן ואויב
-const player = { x: 0, y: 0 };
-const enemy = { x: 11, y: 11 };
-grid[player.y][player.x].playerHere = true;
-grid[enemy.y][enemy.x].enemyHere = true;
-
-// הגדרת יציאות
-grid[0][11].isExit = true;
-grid[11][0].isExit = true;
-
-function resetGame() {
-    // איפוס כל התאים
-    for (let y = 0; y < ROWS; y++) {
-        for (let x = 0; x < COLS; x++) {
-            const cell = grid[y][x];
-            cell.isWall = false;
-            cell.playerHere = false;
-            cell.enemyHere = false;
-            cell.isExit = false;
+function initGrid() {
+    grid = [];
+    for (let y = 0; y < SIZE; y++) {
+        const row = [];
+        for (let x = 0; x < SIZE; x++) {
+            row.push(createCell(x, y));
         }
+        grid.push(row);
     }
 
-    // הצבה מחדש של שחקן, אויב ויציאות
-    player.x = 0;
-    player.y = 0;
-    enemy.x = 11;
-    enemy.y = 11;
+    player = { x: 0, y: 0 };
+    enemy = { x: SIZE - 1, y: SIZE - 1 };
 
-    grid[player.y][player.x].playerHere = true;
-    grid[enemy.y][enemy.x].enemyHere = true;
-    grid[0][11].isExit = true;
-    grid[11][0].isExit = true;
+    exit = {
+        x: Math.floor((player.x + enemy.x) / 2),
+        y: Math.floor((player.y + enemy.y) / 2)
+    };
+    grid[exit.y][exit.x].isExit = true;
 
+    placeRandomElements();
     drawGrid();
 }
 
-// ציור הגריד
+function placeExit() {
+    const candidates = [
+        { x: 0, y: 0 },
+        { x: SIZE - 1, y: 0 },
+        { x: 0, y: SIZE - 1 },
+        { x: SIZE - 1, y: SIZE - 1 },
+        { x: Math.floor(SIZE / 2), y: SIZE - 1 },
+        { x: Math.floor(SIZE / 2), y: 0 }
+    ];
+
+    let best = null;
+    let bestScore = -Infinity;
+
+    for (const c of candidates) {
+        if (isCellBlocked(c)) continue;
+
+        const distToPlayer = Math.abs(player.x - c.x) + Math.abs(player.y - c.y);
+        const distToEnemy = Math.abs(enemy.x - c.x) + Math.abs(enemy.y - c.y);
+
+        const diff = Math.abs(distToPlayer - distToEnemy);
+        const totalDist = distToPlayer + distToEnemy;
+
+        const score = -diff + totalDist;
+
+        if (score > bestScore) {
+            best = c;
+            bestScore = score;
+        }
+    }
+
+    if (best) {
+        grid[best.y][best.x].isExit = true;
+    }
+}
+
+function isCellBlocked(cell) {
+    return (
+        grid[cell.y][cell.x].isWall ||
+        (cell.x === player.x && cell.y === player.y) ||
+        (cell.x === enemy.x && cell.y === enemy.y)
+    );
+}
+
+
+function clearSpecialElements() {
+    for (let y = 0; y < SIZE; y++) {
+        for (let x = 0; x < SIZE; x++) {
+            grid[y][x].isWall = false;
+            grid[y][x].isRandomizer = false;
+            grid[y][x].isExtraTurn = false;
+            grid[y][x].isExit = false;
+        }
+    }
+    grid[exit.y][exit.x].isExit = true; // keep exit intact
+}
+
+
+function placeRandomElements() {
+    const avoid = (x, y) =>
+        (x === player.x && y === player.y) ||
+        (x === enemy.x && y === enemy.y) ||
+        (x === exit.x && y === exit.y);
+
+    let placed = 0;
+    while (placed < WALLS_COUNT) {
+        const x = Math.floor(Math.random() * SIZE);
+        const y = Math.floor(Math.random() * SIZE);
+        if (!avoid(x, y) && !grid[y][x].isWall) {
+            grid[y][x].isWall = true;
+            placed++;
+        }
+    }
+
+    placed = 0;
+    while (placed < RANDOMIZER_COUNT) {
+        const x = Math.floor(Math.random() * SIZE);
+        const y = Math.floor(Math.random() * SIZE);
+        if (!avoid(x, y) && !grid[y][x].isWall && !grid[y][x].isRandomizer) {
+            grid[y][x].isRandomizer = true;
+            placed++;
+        }
+    }
+
+    placed = 0;
+    while (placed < EXTRA_TURN_COUNT) {
+        const x = Math.floor(Math.random() * SIZE);
+        const y = Math.floor(Math.random() * SIZE);
+        if (!avoid(x, y) && !grid[y][x].isWall && !grid[y][x].isExtraTurn) {
+            grid[y][x].isExtraTurn = true;
+            placed++;
+        }
+    }
+}
+
 function drawGrid() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (let y = 0; y < ROWS; y++) {
-        for (let x = 0; x < COLS; x++) {
+    for (let y = 0; y < SIZE; y++) {
+        for (let x = 0; x < SIZE; x++) {
             const cell = grid[y][x];
-            let color = "#fff";
+            ctx.fillStyle = "#fff";
 
-            if (cell.isWall) color = "#444";
-            else if (cell.isExit) color = "#0f0";
-            else if (cell.playerHere) color = "#00f";
-            else if (cell.enemyHere) color = "#f00";
+            if (cell.isWall) ctx.fillStyle = "#444";
+            else if (cell.isExit) ctx.fillStyle = "#0f0";
+            else if (cell.isRandomizer) ctx.fillStyle = "#0ff";
+            else if (cell.isExtraTurn) ctx.fillStyle = "#ff0";
 
-            ctx.fillStyle = color;
+            if (player.x === x && player.y === y) ctx.fillStyle = "#00f";
+            if (enemy.x === x && enemy.y === y) ctx.fillStyle = "#f00";
+
             ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             ctx.strokeStyle = "#000";
             ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -81,14 +164,17 @@ function drawGrid() {
     }
 }
 
-drawGrid();
+initGrid();
 
-// תזוזת השחקן עם מקשי חצים + תור של המחשב
-document.addEventListener("keydown", (event) => {
+
+// === Logic ===
+
+let extraTurn = false;
+
+document.addEventListener("keydown", (e) => {
     let dx = 0,
         dy = 0;
-
-    switch (event.key) {
+    switch (e.key) {
         case "ArrowUp":
             dy = -1;
             break;
@@ -102,50 +188,144 @@ document.addEventListener("keydown", (event) => {
             dx = 1;
             break;
         default:
-            return; // מקש לא רלוונטי
+            return;
     }
 
     const newX = player.x + dx;
     const newY = player.y + dy;
 
     if (
-        newX >= 0 && newX < COLS &&
-        newY >= 0 && newY < ROWS &&
+        newX >= 0 && newX < SIZE &&
+        newY >= 0 && newY < SIZE &&
         !grid[newY][newX].isWall
     ) {
-        grid[player.y][player.x].playerHere = false;
         player.x = newX;
         player.y = newY;
-        grid[player.y][player.x].playerHere = true;
 
-        // תור של המחשב
-        const path = aStar(grid[enemy.y][enemy.x], player, grid);
-        if (path && path.length > 1) {
-            grid[enemy.y][enemy.x].enemyHere = false;
-            enemy.x = path[1].x;
-            enemy.y = path[1].y;
-            grid[enemy.y][enemy.x].enemyHere = true;
+        const cell = grid[newY][newX];
+
+        // Check for randomizer (🌀)
+
+        if (cell.isRandomizer) {
+            grid[player.y][player.x].isRandomizer = false;
+            clearSpecialElements(); // 🧹 Clear all walls/buttons
+            placeRandomElements(); // 🎲 Generate new walls/buttons
+            drawGrid();
+        }
+
+
+        // Check for extra turn (⚡)
+        if (cell.isExtraTurn) {
+            cell.isExtraTurn = false;
+            extraTurn = true;
+        }
+
+        // Check if reached exit
+        if (cell.isExit) {
+            Swal.fire({
+                title: "🎉 You Escaped!",
+                text: "Congratulations!",
+                icon: "success",
+                confirmButtonText: "Play Again"
+            }).then(() => {
+                initGrid();
+            });
+            return;
         }
 
         drawGrid();
 
-        // בדיקת הפסד
+        if (!extraTurn) moveEnemy();
+        else extraTurn = false;
+
+        drawGrid();
+
         if (player.x === enemy.x && player.y === enemy.y) {
-            setTimeout(() => {
-                alert("💀 Game Over – The AI caught you!");
-                resetGame();
-            }, 100);
-            return;
+            Swal.fire({
+                title: "💀 Caught!",
+                text: "The enemy reached you.",
+                icon: "error",
+                confirmButtonText: "Try Again"
+            }).then(() => {
+                initGrid();
+            });
         }
-
-        // בדיקת ניצחון
-        if (grid[player.y][player.x].isExit) {
-            setTimeout(() => {
-                alert("🎉 You escaped the maze!");
-                resetGame();
-            }, 100);
-            return;
-        }
-
     }
 });
+
+function moveEnemy() {
+    const path = aStar(grid[enemy.y][enemy.x], player);
+    if (path.length > 1) {
+        enemy = { x: path[1].x, y: path[1].y };
+    }
+}
+
+function heuristic(a, b) {
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+function getNeighbors(cell) {
+    const dirs = [
+        { x: 0, y: -1 },
+        { x: 0, y: 1 },
+        { x: -1, y: 0 },
+        { x: 1, y: 0 }
+    ];
+    const neighbors = [];
+
+    for (const dir of dirs) {
+        const nx = cell.x + dir.x;
+        const ny = cell.y + dir.y;
+        if (
+            nx >= 0 && nx < SIZE &&
+            ny >= 0 && ny < SIZE &&
+            !grid[ny][nx].isWall
+        ) {
+            neighbors.push(grid[ny][nx]);
+        }
+    }
+
+    return neighbors;
+}
+
+function aStar(start, goal) {
+    const openSet = [start];
+    const cameFrom = new Map();
+    const gScore = new Map();
+    const fScore = new Map();
+
+    const key = (p) => `${p.x},${p.y}`;
+    gScore.set(key(start), 0);
+    fScore.set(key(start), heuristic(start, goal));
+
+    while (openSet.length > 0) {
+        openSet.sort((a, b) => fScore.get(key(a)) - fScore.get(key(b)));
+        let current = openSet.shift();
+
+        if (current.x === goal.x && current.y === goal.y) {
+            const path = [current];
+            while (cameFrom.has(key(current))) {
+                current = cameFrom.get(key(current));
+                path.unshift(current);
+            }
+            return path;
+        }
+
+        for (const neighbor of getNeighbors(current)) {
+            const tempG = gScore.get(key(current)) + 1;
+            if (!gScore.has(key(neighbor)) || tempG < gScore.get(key(neighbor))) {
+                cameFrom.set(key(neighbor), current);
+                gScore.set(key(neighbor), tempG);
+                fScore.set(key(neighbor), tempG + heuristic(neighbor, goal));
+
+                if (!openSet.some(p => p.x === neighbor.x && p.y === neighbor.y)) {
+                    openSet.push(neighbor);
+                }
+            }
+        }
+    }
+
+    return [];
+}
+
+initGrid();
