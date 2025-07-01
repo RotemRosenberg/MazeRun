@@ -190,10 +190,10 @@ function step5() {
     enemy = { x: SIZE - 1, y: 0 };
     grid[SIZE - 1][SIZE - 1].isExit = true;
 
-    // הצגת כפתור הבא כברירת מחדל
     const btn = document.getElementById("nextBtn");
-    btn.textContent = "Next Step";
-    btn.onclick = nextStep;
+    btn.textContent = "Start Game";
+    btn.onclick = () => window.location.href = "game.html";
+
 
     drawGrid();
 }

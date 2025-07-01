@@ -11,7 +11,25 @@
 
 <body>
     <h1>Maze Run – Game</h1>
+
+
+    <div style="margin: 20px;">
+        <button onclick="window.location.href='index.html'">🏠 Back to Home</button>
+    </div>
+
+    <div style="margin: 20px;">
+        <button onclick="startGame('easy')">Easy</button>
+        <button onclick="startGame('medium')">Medium</button>
+        <button onclick="startGame('hard')">Hard</button>
+    </div>
     <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <script>
+        function startGame(mode) {
+            currentMode = mode;
+            initGrid(currentMode);
+        }
+    </script>
+
     <script src="game.js"></script>
 </body>
 
