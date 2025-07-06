@@ -7,21 +7,50 @@
     <title>Maze Run - Start</title>
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </head>
 
-<body>
-    <div class="landing-container">
-        <h1>MAZE RUN</h1>
+<body class="index-page">
+    <div class="main-container">
+        <h1>🎮 MAZE RUN</h1>
+        <p class="subtitle">Navigate through mazes, collect coins, and escape from intelligent enemies!</p>
 
         <div class="menu-buttons">
-            <button onclick="startGame()">🎮 New Game</button>
-            <button onclick="openTutorial()">📘 Tutorial</button>
+            <button class="btn btn-primary" onclick="startGame()">🎮 Start Game</button>
+            <button class="btn btn-secondary" onclick="openTutorial()">📘 Tutorial</button>
+        </div>
+        
+        <div class="features">
+            <h3>🎯 Game Features</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div>🪙</div>
+                    <div><strong>Collect Coins</strong></div>
+                </div>
+                <div class="feature-item">
+                    <div>👹</div>
+                    <div><strong>Smart AI</strong></div>
+                </div>
+                <div class="feature-item">
+                    <div>⚡</div>
+                    <div><strong>Power-ups</strong></div>
+                </div>
+                <div class="feature-item">
+                    <div>🔥</div>
+                    <div><strong>Hard Mode</strong></div>
+                </div>
+                <div class="feature-item">
+                    <div>🧱</div>
+                    <div><strong>Random Mazes</strong></div>
+                </div>
+                <div class="feature-item">
+                    <div>🎯</div>
+                    <div><strong>Score System</strong></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="../js/index.js"></script>
-
 </body>
 
 </html>

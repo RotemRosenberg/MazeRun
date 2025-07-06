@@ -1,34 +1,497 @@
+/* Base styles for all pages */
 body {
-    background-color: #0a0a1f;
-    color: white;
     font-family: Arial, sans-serif;
-    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
     margin: 0;
-    padding: 0;
+    padding: 20px;
+    color: #333;
 }
 
-.landing-container {
-    margin-top: 100px;
+/* For index page centered layout */
+body.index-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Common container styles */
+.container {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Typography */
 h1 {
-    font-size: 48px;
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+/* Button styles */
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px;
+    font-size: 1em;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+}
+
+.btn-secondary {
+    background: linear-gradient(45deg, #56ccf2, #2f80ed);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #ff4444, #cc0000);
+    color: white;
+}
+
+.btn-warning {
+    background: linear-gradient(45deg, #ff9800, #f57c00);
+    color: white;
+}
+
+/* Game specific styles */
+.game-container {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.game-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.game-info-panel-horizontal {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.info-item-horizontal {
+    padding: 15px 25px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+    min-width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex: 1;
+    max-width: 350px;
+}
+
+.info-item-line {
+    margin-bottom: 8px;
+}
+
+.info-group {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex: 1;
+    text-align: center;
+}
+
+.info-group h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.1em;
+}
+
+.info-group p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.game-canvas-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+#gameCanvas {
+    border: 3px solid #333;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    background: white;
+}
+
+.game-legend {
+    margin: 30px auto;
+    text-align: center;
+    background: #f9f9f9;
+    padding: 25px;
+    border-radius: 15px;
+}
+
+.game-legend h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.game-legend-items {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.game-legend p {
+    margin-top: 20px;
+    color: #666;
+    font-size: 1.1em;
+}
+
+.btn-home {
+    background: linear-gradient(45deg, #56ccf2, #2f80ed);
+    color: white;
+}
+
+/* Legend styles */
+.legend {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.legend h3 {
+    margin-top: 0;
+    color: #333;
+    text-align: center;
+}
+
+.legend h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+.legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-size: 0.9em;
+    color: black;
+}
+
+.legend-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.game-legend-items .legend-item {
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.game-legend-items .legend-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Index page specific styles */
+.main-container {
+    background: white;
+    border-radius: 20px;
+    padding: 50px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    max-width: 600px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.main-container h1 {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1.2em;
     margin-bottom: 40px;
 }
 
-.menu-buttons button {
-    display: block;
-    margin: 20px auto;
-    padding: 15px 30px;
-    font-size: 18px;
-    border: none;
-    border-radius: 10px;
-    background-color: #1e90ff;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 300px;
+    margin: 0 auto;
 }
 
-.menu-buttons button:hover {
-    background-color: #006ad1;
+.menu-buttons .btn {
+    padding: 15px 30px;
+    font-size: 1.1em;
+    border-radius: 12px;
+}
+
+.menu-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.features {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #eee;
+}
+
+.features h3 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.feature-list {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.feature-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    min-width: 120px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.feature-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Tutorial specific styles */
+.tutorial-container {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.tutorial-content {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.canvas-container {
+    flex: 1;
+    text-align: center;
+}
+
+.instructions-panel {
+    flex: 1;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#tutorialCanvas {
+    border: 3px solid #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+#instruction {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.legend .legend-items {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 0.9em;
+}
+
+.legend .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.legend .legend-item:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.legend .legend-items .legend-item {
+    background: #e9ecef;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.step-indicator {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.step-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.step-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: all 0.3s ease;
+}
+
+.step-dot.active {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    transform: scale(1.2);
+}
+
+.step-dot.completed {
+    background: #4CAF50;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.game-container .button-group {
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.game-container .btn {
+    padding: 10px 20px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .tutorial-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .canvas-container {
+        order: 2;
+    }
+    
+    .instructions-panel {
+        order: 1;
+    }
+    
+    .game-info-panel-horizontal {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .legend-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+    }
+    
+    .main-container {
+        padding: 30px 20px;
+    }
+    
+    .main-container h1 {
+        font-size: 2.5em;
+    }
+    
+    .legend .legend-items {
+        grid-template-columns: 1fr;
+    }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,12 +8,51 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <h1>Maze Run – Tutorial</h1>
-    <p id="instruction">Step 1: Use arrow keys to move the player (blue square).</p>
-    <canvas id="tutorialCanvas" width="400" height="400"></canvas>
-    <div style="margin-top: 20px;">
-        <button id="nextBtn" onclick="nextStep()">Next Step</button>
+    <div class="tutorial-container">
+        <h1>📘 Maze Run – Tutorial</h1>
+        
+        <div class="step-indicator">
+            <p><strong>Step <span id="stepNumber">1</span> of 6</strong></p>
+            <div class="step-dots">
+                <div class="step-dot active" id="dot1"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-dot" id="dot3"></div>
+                <div class="step-dot" id="dot4"></div>
+                <div class="step-dot" id="dot5"></div>
+                <div class="step-dot" id="dot6"></div>
+            </div>
+        </div>
+        
+        <div class="tutorial-content">
+            <div class="canvas-container">
+                <canvas id="tutorialCanvas" width="400" height="400"></canvas>
+            </div>
+            
+            <div class="instructions-panel">
+                <p id="instruction">Use arrow keys ⬆️ ⬇️ ⬅️ ➡️ to move the player 👤<br><em>Note: In tutorial mode, enemies don't move</em></p>
+                
+                <div class="legend">
+                    <h4>🎯 Game Elements:</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">👤 Player (you)</div>
+                        <div class="legend-item">👹 Enemy (static)</div>
+                        <div class="legend-item">🚪 Exit</div>
+                        <div class="legend-item">🪙 Coins</div>
+                        <div class="legend-item">⚡ Extra Turn</div>
+                        <div class="legend-item">🔄 Randomizer</div>
+                        <div class="legend-item">🧱 Wall</div>
+                        <div class="legend-item">😈 Enemy 2 (static)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="window.location.href='index.html'">🏠 Back to Home</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next Step ➡️</button>
+        </div>
     </div>
+    
     <script src="../js/tutorial.js"></script>
 </body>
 </html>

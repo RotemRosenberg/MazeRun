@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he">
 
 <head>
     <meta charset="UTF-8" />
@@ -7,107 +7,11 @@
     <title>Maze Run – Game</title>
     <link rel="stylesheet" href="../css/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        
-        .game-container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .game-info-panel-horizontal {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin: 20px 0;
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .info-item-horizontal {
-            padding: 15px 25px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            text-align: center;
-            min-width: 200px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            flex: 1;
-            max-width: 350px;
-        }
-        
-        .legend-item {
-            color: black;   
-            background: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease;
-        }
-        
-        .legend-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(45deg, #ff4444, #cc0000);
-            color: white;
-        }
-        
-        .btn-home {
-            background: linear-gradient(45deg, #56ccf2, #2f80ed);
-            color: white;
-        }
-    </style>
 </head>
 
 <body>
     <div class="game-container">
-        <h1 style="text-align: center; color: #333; margin-bottom: 30px; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">🎮 Maze Run – Game</h1>
+        <h1>🎮 Maze Run – Game</h1>
 
         <div class="button-group">
             <button class="btn btn-home" onclick="window.location.href='index.html'">🏠 Back to Home</button>
@@ -118,25 +22,25 @@
         <!-- Game Info Panel - Now horizontal above the game -->
         <div class="game-info-panel-horizontal">
             <div class="info-item-horizontal">
-                <div style="margin-bottom: 8px;"><strong>Score:</strong> <span id="scoreDisplay">0</span></div>
+                <div class="info-item-line"><strong>Score:</strong> <span id="scoreDisplay">0</span></div>
                 <div><strong>Mode:</strong> <span id="modeDisplay">NORMAL</span></div>
             </div>
             
             <div class="info-item-horizontal">
-                <div style="margin-bottom: 8px;"><strong>Goal:</strong> Collect coins 🪙 and reach the exit 🚪</div>
+                <div class="info-item-line"><strong>Goal:</strong> Collect coins 🪙 and reach the exit 🚪</div>
                 <div><strong>Controls:</strong> ⬆️ ⬇️ ⬅️ ➡️ Arrow keys to move</div>
             </div>
         </div>
 
         <!-- Game Canvas - Now centered -->
-        <div style="display: flex; justify-content: center; margin: 20px 0;">
-            <canvas id="gameCanvas" width="800" height="800" style="border: 3px solid #333; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2);"></canvas>
+        <div class="game-canvas-container">
+            <canvas id="gameCanvas" width="800" height="800"></canvas>
         </div>
 
         <!-- Game Legend at bottom -->
-        <div style="margin: 30px auto; text-align: center; background: #f9f9f9; padding: 25px; border-radius: 15px;">
-            <h3 style="color: #333; margin-bottom: 20px; font-size: 1.5em;">🎯 Game Legend</h3>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+        <div class="game-legend">
+            <h3>🎯 Game Legend</h3>
+            <div class="game-legend-items">
                 <div class="legend-item">👤 Player</div>
                 <div class="legend-item">👹 Enemy 1</div>
                 <div class="legend-item">😈 Enemy 2</div>
@@ -146,7 +50,7 @@
                 <div class="legend-item">🔄 Randomizer</div>
                 <div class="legend-item">🧱 Wall</div>
             </div>
-            <p style="margin-top: 20px; color: #666; font-size: 1.1em;">
+            <p>
                 <strong>Normal Mode:</strong> Face 1 enemy with 25% walls | 
                 <strong>Hard Mode:</strong> Face 2 enemies with 35% walls - Ultimate challenge!
             </p>
