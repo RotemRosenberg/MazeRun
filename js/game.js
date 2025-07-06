@@ -1,24 +1,31 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const SIZE = Math.floor(Math.random() * 4) + 12; // 12–15
+const SIZE = 30; // Fixed 30x30 grid
+// Update canvas size to 800x800 to accommodate 30x30 grid
+canvas.width = 800;
+canvas.height = 800;
 const CELL_SIZE = canvas.width / SIZE;
 
 let grid = [];
 let player = { x: 0, y: 0 };
 let enemy = { x: SIZE - 1, y: SIZE - 1 };
+let enemy2 = { x: 0, y: SIZE - 1 }; // Second enemy starts at bottom-left
 let exit = { x: Math.floor(SIZE / 2), y: SIZE - 1 };
 
-const WALLS_COUNT = Math.floor(SIZE * SIZE * 0.2);
-const RANDOMIZER_COUNT = 2;
-const EXTRA_TURN_COUNT = 2;
+const WALLS_COUNT_NORMAL = Math.floor(SIZE * SIZE * 0.25); // Normal mode: 25%
+const WALLS_COUNT_HARD = Math.floor(SIZE * SIZE * 0.35); // Hard mode: 35%
+const RANDOMIZER_COUNT = 3; // Increased from 2 to 3
+const EXTRA_TURN_COUNT = 5; // Increased from 2 to 5 (2 + 3 more)
+const COIN_COUNT = 5; // Always 5 coins on the map
 
-let currentMode = 'easy';
-
+let gameMode = 'normal'; // 'normal' or 'hard'
 let extraTurn = false;
+let score = 0; // Player score from collecting coins
 let playerHistory = []; // היסטוריית תנועות השחקן
 let lastPlayerPosition = { x: 0, y: 0 };
 let lastEnemyPosition = { x: SIZE - 1, y: SIZE - 1 };
+let lastEnemy2Position = { x: 0, y: SIZE - 1 };
 
 function createCell(x, y) {
     return {
@@ -27,7 +34,8 @@ function createCell(x, y) {
         isWall: false,
         isExit: false,
         isRandomizer: false,
-        isExtraTurn: false
+        isExtraTurn: false,
+        isCoin: false
     };
 }
 
@@ -73,16 +81,32 @@ function isReachable(start, end, gridToCheck = grid) {
 
 // פונקציה לבדיקת תקינות המפה
 function isGridValid(gridToCheck = grid) {
-    return isReachable(player, enemy, gridToCheck) &&
+    let isValid = isReachable(player, enemy, gridToCheck) &&
         isReachable(player, exit, gridToCheck) &&
         isReachable(enemy, player, gridToCheck);
+    
+    // In hard mode, also check enemy2 connectivity
+    if (gameMode === 'hard') {
+        isValid = isValid && 
+            isReachable(player, enemy2, gridToCheck) &&
+            isReachable(enemy2, player, gridToCheck);
+    }
+    
+    return isValid;
 }
 
 // פונקציה לבדיקה אם מיקום תפוס
 function isPositionOccupied(x, y) {
     return (x === player.x && y === player.y) ||
         (x === enemy.x && y === enemy.y) ||
+        (x === enemy2.x && y === enemy2.y && gameMode === 'hard') ||
         (x === exit.x && y === exit.y);
+}
+
+// פונקציה לבדיקה אם מיקום תפוס על ידי אלמנט מיוחד
+function isSpecialElementOccupied(x, y) {
+    const cell = grid[y][x];
+    return cell.isWall || cell.isExit || cell.isRandomizer || cell.isExtraTurn || cell.isCoin;
 }
 
 // פונקציה לערבוב מערך
@@ -98,7 +122,7 @@ function placeWallsSafely() {
     const maxAttempts = 100;
     let attempts = 0;
     let wallsPlaced = 0;
-    const targetWalls = WALLS_COUNT;
+    const targetWalls = gameMode === 'hard' ? WALLS_COUNT_HARD : WALLS_COUNT_NORMAL;
 
     const availableCells = [];
     for (let y = 0; y < SIZE; y++) {
@@ -132,27 +156,29 @@ function placeWallsSafely() {
 function placeSpecialElementsSafely() {
     const specialElements = [
         { type: 'isRandomizer', count: RANDOMIZER_COUNT },
-        { type: 'isExtraTurn', count: EXTRA_TURN_COUNT }
+        { type: 'isExtraTurn', count: EXTRA_TURN_COUNT },
+        { type: 'isCoin', count: COIN_COUNT }
     ];
 
     for (const element of specialElements) {
         let placed = 0;
         let attempts = 0;
-        const maxAttempts = 50;
+        const maxAttempts = 100;
 
         while (placed < element.count && attempts < maxAttempts) {
             const x = Math.floor(Math.random() * SIZE);
             const y = Math.floor(Math.random() * SIZE);
 
             if (!isPositionOccupied(x, y) &&
-                !grid[y][x].isWall &&
-                !grid[y][x][element.type]) {
+                !isSpecialElementOccupied(x, y)) {
 
                 grid[y][x][element.type] = true;
                 placed++;
             }
             attempts++;
         }
+        
+        console.log(`Placed ${placed}/${element.count} ${element.type} elements`);
     }
 }
 
@@ -166,6 +192,7 @@ function placeRandomElementsSafe() {
             grid[y][x].isWall = false;
             grid[y][x].isRandomizer = false;
             grid[y][x].isExtraTurn = false;
+            grid[y][x].isCoin = false;
         }
     }
 
@@ -188,6 +215,7 @@ function validateInitialGrid() {
                 grid[y][x].isWall = false;
                 grid[y][x].isRandomizer = false;
                 grid[y][x].isExtraTurn = false;
+                grid[y][x].isCoin = false;
             }
         }
 
@@ -205,6 +233,7 @@ function validateInitialGrid() {
                 grid[y][x].isWall = false;
                 grid[y][x].isRandomizer = false;
                 grid[y][x].isExtraTurn = false;
+                grid[y][x].isCoin = false;
             }
         }
     }
@@ -212,8 +241,11 @@ function validateInitialGrid() {
 
 // === שאר הפונקציות הקיימות ===
 
-function initGrid(difficulty = 'easy') {
+function initGrid(mode = 'normal') {
     grid = [];
+    score = 0; // Reset score when starting new game
+    gameMode = mode; // Set game mode
+    
     for (let y = 0; y < SIZE; y++) {
         const row = [];
         for (let x = 0; x < SIZE; x++) {
@@ -224,23 +256,13 @@ function initGrid(difficulty = 'easy') {
 
     player = { x: 0, y: 0 };
     enemy = { x: SIZE - 1, y: SIZE - 1 };
+    enemy2 = { x: 0, y: SIZE - 1 }; // Second enemy at bottom-left
 
-    if (difficulty === 'easy') {
-        exit = {
-            x: Math.floor((player.x + enemy.x) / 2),
-            y: Math.floor((player.y + enemy.y) / 2)
-        };
-    } else if (difficulty === 'medium') {
-        exit = {
-            x: Math.floor((player.x + enemy.x) / 2) + Math.sign(enemy.x - player.x),
-            y: Math.floor((player.y + enemy.y) / 2) + Math.sign(enemy.y - player.y)
-        };
-    } else if (difficulty === 'hard') {
-        exit = {
-            x: Math.floor((player.x + enemy.x) / 2) + 2 * Math.sign(enemy.x - player.x),
-            y: Math.floor((player.y + enemy.y) / 2) + 2 * Math.sign(enemy.y - player.y)
-        };
-    }
+    // Place exit in the middle area
+    exit = {
+        x: Math.floor((player.x + enemy.x) / 2),
+        y: Math.floor((player.y + enemy.y) / 2)
+    };
 
     exit.x = Math.max(0, Math.min(SIZE - 1, exit.x));
     exit.y = Math.max(0, Math.min(SIZE - 1, exit.y));
@@ -264,15 +286,49 @@ function drawGrid() {
             else if (cell.isExit) ctx.fillStyle = "#0f0";
             else if (cell.isRandomizer) ctx.fillStyle = "#0ff";
             else if (cell.isExtraTurn) ctx.fillStyle = "#ff0";
+            else if (cell.isCoin) ctx.fillStyle = "#ffd700"; // Gold color for coins
 
             if (player.x === x && player.y === y) ctx.fillStyle = "#00f";
             if (enemy.x === x && enemy.y === y) ctx.fillStyle = "#f00";
+            if (enemy2.x === x && enemy2.y === y && gameMode === 'hard') ctx.fillStyle = "#cc0000"; // Darker red for second enemy
 
             ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             ctx.strokeStyle = "#000";
             ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         }
     }
+    
+    // Display score and mode
+    ctx.fillStyle = "#000";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Score: ${score}`, 10, 30);
+    ctx.fillText(`Mode: ${gameMode.toUpperCase()}`, 10, 60);
+}
+
+// פונקציה להוספת מטבע חדש כאשר מטבע נלקח
+function spawnNewCoin() {
+    let attempts = 0;
+    const maxAttempts = 100;
+    
+    while (attempts < maxAttempts) {
+        const x = Math.floor(Math.random() * SIZE);
+        const y = Math.floor(Math.random() * SIZE);
+        
+        // בדיקה שהמיקום לא תפוס ושאין שם אלמנט מיוחד אחר
+        if (!isPositionOccupied(x, y) && 
+            !grid[y][x].isWall && 
+            !grid[y][x].isExit && 
+            !grid[y][x].isRandomizer && 
+            !grid[y][x].isExtraTurn && 
+            !grid[y][x].isCoin) {
+            
+            grid[y][x].isCoin = true;
+            return;
+        }
+        attempts++;
+    }
+    
+    console.log("Could not spawn new coin after multiple attempts");
 }
 
 document.addEventListener("keydown", (e) => {
@@ -302,6 +358,7 @@ document.addEventListener("keydown", (e) => {
         // שמירת מיקום קודם לבדיקת החלפת מקומות
         lastPlayerPosition = { x: player.x, y: player.y };
         lastEnemyPosition = { x: enemy.x, y: enemy.y };
+        lastEnemy2Position = { x: enemy2.x, y: enemy2.y };
         
         // עדכון היסטוריית השחקן
         playerHistory.push({ x: player.x, y: player.y });
@@ -311,6 +368,13 @@ document.addEventListener("keydown", (e) => {
         player.y = newY;
 
         const cell = grid[newY][newX];
+
+        // בדיקה לאיסוף מטבע
+        if (cell.isCoin) {
+            cell.isCoin = false;
+            score += 1;
+            spawnNewCoin(); // הוסף מטבע חדש במיקום אחר
+        }
 
         // בדיקה לRandomizer - עם הפונקציה הבטוחה החדשה
         if (cell.isRandomizer) {
@@ -328,19 +392,25 @@ document.addEventListener("keydown", (e) => {
         if (cell.isExit) {
             Swal.fire({
                 title: "🎉 You Escaped!",
-                text: "Congratulations!",
+                text: `Congratulations! You collected ${score} coins!`,
                 icon: "success",
                 confirmButtonText: "Play Again"
             }).then(() => {
-                initGrid(currentMode);
+                initGrid(gameMode);
             });
             return;
         }
 
         drawGrid();
 
-        if (!extraTurn) moveEnemy();
-        else extraTurn = false;
+        if (!extraTurn) {
+            moveEnemy();
+            if (gameMode === 'hard') {
+                moveEnemy2();
+            }
+        } else {
+            extraTurn = false;
+        }
 
         drawGrid();
 
@@ -352,7 +422,7 @@ document.addEventListener("keydown", (e) => {
                 icon: "error",
                 confirmButtonText: "Try Again"
             }).then(() => {
-                initGrid(currentMode);
+                initGrid(gameMode);
             });
         }
     }
@@ -360,15 +430,29 @@ document.addEventListener("keydown", (e) => {
 
 // פונקציה לבדיקת תפיסה משופרת
 function isPlayerCaught() {
-    // בדיקה רגילה - אותו מיקום
+    // בדיקה רגילה - אותו מיקום עם enemy1
     if (player.x === enemy.x && player.y === enemy.y) {
         return true;
     }
     
-    // בדיקת החלפת מקומות
+    // בדיקת החלפת מקומות עם enemy1
     if (player.x === lastEnemyPosition.x && player.y === lastEnemyPosition.y &&
         enemy.x === lastPlayerPosition.x && enemy.y === lastPlayerPosition.y) {
         return true;
+    }
+    
+    // בדיקות עבור enemy2 במוד קשה
+    if (gameMode === 'hard') {
+        // בדיקה רגילה - אותו מיקום עם enemy2
+        if (player.x === enemy2.x && player.y === enemy2.y) {
+            return true;
+        }
+        
+        // בדיקת החלפת מקומות עם enemy2
+        if (player.x === lastEnemy2Position.x && player.y === lastEnemy2Position.y &&
+            enemy2.x === lastPlayerPosition.x && enemy2.y === lastPlayerPosition.y) {
+            return true;
+        }
     }
     
     return false;
@@ -541,6 +625,16 @@ function moveEnemy() {
     }
 }
 
+function moveEnemy2() {
+    // Enemy2 uses a simpler strategy - direct pursuit
+    const target = { x: player.x, y: player.y };
+    
+    const path = aStar(grid[enemy2.y][enemy2.x], target);
+    if (path.length > 1) {
+        enemy2 = { x: path[1].x, y: path[1].y };
+    }
+}
+
 function heuristic(a, b) {
     const manhattanDistance = Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     
@@ -632,4 +726,5 @@ function aStar(start, goal) {
     return [];
 }
 
-initGrid(currentMode);
+// Remove the auto-start call since we now auto-start in HTML
+// initGrid() is now called by window.onload in game.html

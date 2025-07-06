@@ -15,22 +15,35 @@
 
     <div style="margin: 20px;">
         <button onclick="window.location.href='index.html'">🏠 Back to Home</button>
+        <button onclick="initGrid('normal')">🔄 New Maze (Normal)</button>
+        <button onclick="initGrid('hard')" style="background-color: #ff4444; color: white; font-weight: bold;">🔥 Hard Mode (2 Enemies)</button>
     </div>
 
-    <div style="margin: 20px;">
-        <button onclick="startGame('easy')">Easy</button>
-        <button onclick="startGame('medium')">Medium</button>
-        <button onclick="startGame('hard')">Hard</button>
+    <div style="margin: 20px; font-family: Arial, sans-serif;">
+        <h3>Game Legend:</h3>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <div>🔵 <span style="color: #00f;">Blue</span> - Player</div>
+            <div>🔴 <span style="color: #f00;">Red</span> - Enemy 1</div>
+            <div>🟤 <span style="color: #cc0000;">Dark Red</span> - Enemy 2 (Hard Mode)</div>
+            <div>🟢 <span style="color: #0f0;">Green</span> - Exit</div>
+            <div>🟡 <span style="color: #ffd700;">Gold</span> - Coins</div>
+            <div>🟡 <span style="color: #ff0;">Yellow</span> - Extra Turn</div>
+            <div>🔵 <span style="color: #0ff;">Cyan</span> - Randomizer</div>
+            <div>⚫ <span style="color: #444;">Gray</span> - Wall</div>
+        </div>
+        <p><strong>Goal:</strong> Collect coins and reach the green exit while avoiding the red enemies!</p>
+        <p><strong>Hard Mode:</strong> Face 2 enemies and more walls for the ultimate challenge!</p>
     </div>
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
-    <script>
-        function startGame(mode) {
-            currentMode = mode;
-            initGrid(currentMode);
-        }
-    </script>
+
+    <canvas id="gameCanvas" width="800" height="800"></canvas>
 
     <script src="../js/game.js"></script>
+    <script>
+        // Auto-start the game when page loads
+        window.onload = function() {
+            initGrid('normal');
+        };
+    </script>
 </body>
 
 </html>
