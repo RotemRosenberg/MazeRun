@@ -272,6 +272,9 @@ function initGrid(mode = 'normal') {
     placeRandomElementsSafe();
     validateInitialGrid();
     drawGrid();
+    
+    // עדכון הפאנל הצדדי
+    updateGameInfo();
 }
 
 function drawGrid() {
@@ -280,29 +283,85 @@ function drawGrid() {
     for (let y = 0; y < SIZE; y++) {
         for (let x = 0; x < SIZE; x++) {
             const cell = grid[y][x];
+            
+            // Draw white background for all cells
             ctx.fillStyle = "#fff";
-
-            if (cell.isWall) ctx.fillStyle = "#444";
-            else if (cell.isExit) ctx.fillStyle = "#0f0";
-            else if (cell.isRandomizer) ctx.fillStyle = "#0ff";
-            else if (cell.isExtraTurn) ctx.fillStyle = "#ff0";
-            else if (cell.isCoin) ctx.fillStyle = "#ffd700"; // Gold color for coins
-
-            if (player.x === x && player.y === y) ctx.fillStyle = "#00f";
-            if (enemy.x === x && enemy.y === y) ctx.fillStyle = "#f00";
-            if (enemy2.x === x && enemy2.y === y && gameMode === 'hard') ctx.fillStyle = "#cc0000"; // Darker red for second enemy
-
             ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            ctx.strokeStyle = "#000";
+            
+            // Draw border
+            ctx.strokeStyle = "#ddd";
+            ctx.lineWidth = 1;
             ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            
+            // Draw cell contents with icons
+            const centerX = x * CELL_SIZE + CELL_SIZE / 2;
+            const centerY = y * CELL_SIZE + CELL_SIZE / 2;
+            
+            ctx.font = `${CELL_SIZE * 0.7}px Arial`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            if (cell.isWall) {
+                ctx.fillStyle = "#444";
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                ctx.fillStyle = "#fff";
+                ctx.fillText("🧱", centerX, centerY);
+            } else if (cell.isExit) {
+                ctx.fillStyle = "#e8f5e8";
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                ctx.fillStyle = "#000";
+                ctx.fillText("🚪", centerX, centerY);
+            } else if (cell.isRandomizer) {
+                ctx.fillStyle = "#e8f8ff";
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                ctx.fillStyle = "#000";
+                ctx.fillText("🔄", centerX, centerY);
+            } else if (cell.isExtraTurn) {
+                ctx.fillStyle = "#fffacd";
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                ctx.fillStyle = "#000";
+                ctx.fillText("⚡", centerX, centerY);
+            } else if (cell.isCoin) {
+                ctx.fillStyle = "#fff8dc";
+                ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                ctx.fillStyle = "#000";
+                ctx.fillText("🪙", centerX, centerY);
+            }
+            
+            // Draw characters on top
+            if (player.x === x && player.y === y) {
+                ctx.fillStyle = "#000";
+                ctx.fillText("👤", centerX, centerY);
+            }
+            if (enemy.x === x && enemy.y === y) {
+                ctx.fillStyle = "#000";
+                ctx.fillText("👹", centerX, centerY);
+            }
+            if (enemy2.x === x && enemy2.y === y && gameMode === 'hard') {
+                ctx.fillStyle = "#000";
+                ctx.fillText("😈", centerX, centerY);
+            }
         }
     }
     
-    // Display score and mode
-    ctx.fillStyle = "#000";
-    ctx.font = "20px Arial";
-    ctx.fillText(`Score: ${score}`, 10, 30);
-    ctx.fillText(`Mode: ${gameMode.toUpperCase()}`, 10, 60);
+    // Update the side panel
+    updateGameInfo();
+}
+
+// פונקציה לעדכון הפאנל הצדדי
+function updateGameInfo() {
+    const scoreElement = document.getElementById('scoreDisplay');
+    const modeElement = document.getElementById('modeDisplay');
+    
+    if (scoreElement) {
+        scoreElement.textContent = score;
+    }
+    
+    if (modeElement) {
+        modeElement.textContent = gameMode.toUpperCase();
+        modeElement.style.color = gameMode === 'hard' ? '#cc0000' : '#0066cc';
+        modeElement.style.fontWeight = gameMode === 'hard' ? 'bold' : 'normal';
+    }
 }
 
 // פונקציה להוספת מטבע חדש כאשר מטבע נלקח
