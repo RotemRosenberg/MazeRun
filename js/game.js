@@ -395,15 +395,19 @@ document.addEventListener("keydown", (e) => {
         dy = 0;
     switch (e.key) {
         case "ArrowUp":
+            e.preventDefault(); // מניעת גלילת הדף
             dy = -1;
             break;
         case "ArrowDown":
+            e.preventDefault(); // מניעת גלילת הדף
             dy = 1;
             break;
         case "ArrowLeft":
+            e.preventDefault(); // מניעת גלילת הדף
             dx = -1;
             break;
         case "ArrowRight":
+            e.preventDefault(); // מניעת גלילת הדף
             dx = 1;
             break;
         default:
