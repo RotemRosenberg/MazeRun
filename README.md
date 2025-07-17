@@ -126,6 +126,10 @@ MazeRun/
 - 🔄 **רנדומיזר** - משנה את המבוך
 - 🧱 **קירות** - מכשולים במבוך
 
+## 🔗 קישורים
+
+- 🎮 **[שחק עכשיו](https://rotemrosenberg.github.io/MazeRun/html/index.html)** - המשחק המלא
+- 📂 **[GitHub Repository](https://github.com/RotemRosenberg/MazeRun)** - קוד המקור
 ---
 
 **נוצר על ידי:** רותם רועי מיכאל ואלעד  
